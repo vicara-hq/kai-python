@@ -11,7 +11,7 @@ setuptools.setup(
     description="A python package to use the sdk",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/CallMeTarush/kai_python_package",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

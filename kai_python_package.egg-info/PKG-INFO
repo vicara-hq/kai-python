@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: kai-python-package
+Version: 0.0.1
+Summary: A python package to use the sdk
+Home-page: https://github.com/CallMeTarush/kai_python_package
+Author: Kai Software
+Author-email: tarush@vicara.co
+License: UNKNOWN
+Description: # Kai Python Package
+        
+        Sup?
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
