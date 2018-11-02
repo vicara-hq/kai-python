@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="kaisdk",
-    version="0.0.1",
+    version="0.0.3",
     author="Kai Software",
     author_email="tarush@vicara.co",
     description="A python package to use the sdk",
