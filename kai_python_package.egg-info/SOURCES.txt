@@ -1,7 +1,0 @@
-README.md
-setup.py
-kai_python_package/__init__.py
-kai_python_package.egg-info/PKG-INFO
-kai_python_package.egg-info/SOURCES.txt
-kai_python_package.egg-info/dependency_links.txt
-kai_python_package.egg-info/top_level.txt

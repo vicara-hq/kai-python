@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="kai_python_package",
+    name="kaisdk",
     version="0.0.1",
     author="Kai Software",
     author_email="tarush@vicara.co",
