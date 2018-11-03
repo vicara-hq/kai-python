@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="kaisdk",
+    name="kai-sdk",
     version="0.0.7",
-    author="Kai Software",
-    author_email="tarush@vicara.co",
-    description="A python package to use the sdk",
+    author="Vicara",
+    author_email="dev@vicara.co",
+    description="A python package to assist in interfacig with the KAI SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/CallMeTarush/kai_python_package",
+    url="https://github.com/vicara-hq/kai-python",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
