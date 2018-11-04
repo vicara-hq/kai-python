@@ -2,46 +2,43 @@ from websocket import create_connection
 import websocket
 import json
 
-host = "localhost"
-port = 2203
-buf = 1024
-addr = (host,port)
-
-websocket.enableTrace(True)
-ws = create_connection('ws://localhost:2203')
-
-print "Websocket active."
-print "address:\t"+host+":"+str(port)
-
-global_capabilities = [
-    "gestureData",
-    "fingerShortcutData",
-    "quaternionData",
-    "pyrData"
-]
-
 subscribed_capabilities = {
-    "type": "setCapabilities",
-    "gestureData": False,
-    "fingerShortcutData": False,
-    "quaternionData": False,
-    "pyrData": False
+    "type": "setCapabilities"
 }
 
-def set_capabilities( capabilities ):
+global ws
+
+def connect_sdk():
+    websocket.enableTrace(True)
+    try:
+        ws = create_connection('ws://localhost:2203')
+        # return(ws)
+    except Exception as error:
+        print('Caught this error: ' + repr(error))
+        return(None)
+
+def subscribe_capabilities( capabilities ):
+
+    # ws = connect_sdk()
 
     if( type(capabilities) is list ):
         for i in capabilities:
-            try:
-                subscribed_capabilities[str(i)] = True
-            except ValueError:
-                return("Wrong Format")
+            subscribed_capabilities[str(i)] = True
 
+        try:
             ws.send(json.dumps(subscribed_capabilities))
+        except Exception as error:
+            print('Caught this error: ' + repr(error))
 
     else:
         return("Wrong format, must be a list")
 
-def receive_data():
-    result = ws.recv()
-    return('Result: {}'.format(result))
+def unsubscribe_capabilities( capabilities ):
+
+    # ws = connect_sdk()
+
+    if( type(capabilities) is list ):
+        for i in capabilities:
+            subscribed_capabilities[str(i)] = False
+        ws.send(json.dumps(subscribed_capabilities))
+
