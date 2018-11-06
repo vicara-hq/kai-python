@@ -1,4 +1,3 @@
-from websocket import create_connection
 import websocket
 import json
 
@@ -6,16 +5,21 @@ subscribed_capabilities = {
     "type": "setCapabilities"
 }
 
-global ws
+# def connect_sdk():
+#     websocket.enableTrace(True)
+#     try:
+#         ws = create_connection('ws://localhost:2203')
+#         return(ws)
+#     except Exception as error:
+#         print('Caught this error: ' + repr(error))
+#         return(None)
 
-def connect_sdk():
-    websocket.enableTrace(True)
-    try:
-        ws = create_connection('ws://localhost:2203')
-        # return(ws)
-    except Exception as error:
-        print('Caught this error: ' + repr(error))
-        return(None)
+ws = websocket.WebSocket()
+
+try:
+    ws.connect('ws://localhost:2203')
+except:
+    print('Sdk seems to be disabled, Consider Restarting.')
 
 def subscribe_capabilities( capabilities ):
 
@@ -42,3 +46,5 @@ def unsubscribe_capabilities( capabilities ):
             subscribed_capabilities[str(i)] = False
         ws.send(json.dumps(subscribed_capabilities))
 
+def get_data():
+    return(ws.recv())
