@@ -1,9 +1,10 @@
 def is_authourized():
     return(False)
 
-if(is_authourized):
-    from . import pss
-    from . import wss
+if(not is_authourized):
+    quit()
+#     from . import pss
+#     from . import wss
 
-else:
-    print("No auth")
+# else:
+#     print("No auth")

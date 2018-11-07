@@ -5,21 +5,13 @@ subscribed_capabilities = {
     "type": "setCapabilities"
 }
 
-# def connect_sdk():
-#     websocket.enableTrace(True)
-#     try:
-#         ws = create_connection('ws://localhost:2203')
-#         return(ws)
-#     except Exception as error:
-#         print('Caught this error: ' + repr(error))
-#         return(None)
-
-ws = websocket.WebSocket()
-
 try:
     ws.connect('ws://localhost:2203')
 except:
     print('Sdk seems to be disabled, Consider Restarting.')
+
+def send_data(data):
+    ws.send(data)
 
 def subscribe_capabilities( capabilities ):
 
@@ -28,9 +20,8 @@ def subscribe_capabilities( capabilities ):
     if( type(capabilities) is list ):
         for i in capabilities:
             subscribed_capabilities[str(i)] = True
-
         try:
-            ws.send(json.dumps(subscribed_capabilities))
+            send_data( json.dumps(subscribed_capabilities) )
         except Exception as error:
             print('Caught this error: ' + repr(error))
 
@@ -39,12 +30,10 @@ def subscribe_capabilities( capabilities ):
 
 def unsubscribe_capabilities( capabilities ):
 
-    # ws = connect_sdk()
-
     if( type(capabilities) is list ):
         for i in capabilities:
             subscribed_capabilities[str(i)] = False
-        ws.send(json.dumps(subscribed_capabilities))
+        send_data( json.dumps(subscribed_capabilities) )
 
 def get_data():
     return(ws.recv())
