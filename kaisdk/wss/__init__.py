@@ -1,30 +1,34 @@
-import websocket
 import json
+# import websockets
+# import asyncio
 
 subscribed_capabilities = {
     "type": "setCapabilities"
 }
 
-try:
-    ws.connect('ws://localhost:2203')
-except:
-    print('Sdk seems to be disabled, Consider Restarting.')
+# try:
+#     websocket = websockets.connect('ws://localhost:2203') 
+#     # print("Done")
+# except:
+#     print('Sdk seems to be disabled, Consider Restarting.')
 
-def send_data(data):
-    ws.send(data)
+# async def send_data(data):
+#     await websocket.send(data)
+#     return("Data Sent")
 
-def subscribe_capabilities( capabilities ):
+# async def get_data():
+#     recv_data = await websocket.recv()
+#     return(recv_data)
 
-    # ws = connect_sdk()
+async def subscribe_capabilities( capabilities ):
 
     if( type(capabilities) is list ):
         for i in capabilities:
             subscribed_capabilities[str(i)] = True
-        try:
-            send_data( json.dumps(subscribed_capabilities) )
-        except Exception as error:
-            print('Caught this error: ' + repr(error))
-
+        
+        return( json.dumps(subscribed_capabilities) )    
+        # except Exception as error:
+        #     print('Caught this error: ' + repr(error))
     else:
         return("Wrong format, must be a list")
 
@@ -33,7 +37,5 @@ def unsubscribe_capabilities( capabilities ):
     if( type(capabilities) is list ):
         for i in capabilities:
             subscribed_capabilities[str(i)] = False
-        send_data( json.dumps(subscribed_capabilities) )
-
-def get_data():
-    return(ws.recv())
+        # send_data( json.dumps(subscribed_capabilities) )
+        return(json.dumps(subscribed_capabilities))
