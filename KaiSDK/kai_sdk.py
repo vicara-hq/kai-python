@@ -1,5 +1,5 @@
 from KaiSDK.constants import Constants
-from KaiSDK.DataTypes import Hand
+from KaiSDK.DataTypes import Hand, KaiCapabilities
 
 from KaiSDK.Kai import Kai
 import json
@@ -38,14 +38,72 @@ class KaiSDK:
     def getConnectedKais(self):
         obj = dict()
         obj[Constants.Type] = Constants.ListConnectedKais
-        self.send(json.dump(obj))
+        self.send(json.dumps(obj))
+
+    def setCapabilities(self, kai, capabilities):
+        kai.set_capabilities(capabilities)
+
+        if (not self.authenticated):
+            return
+
+        obj = dict()
+        obj[Constants.Type] = Constants.SetCapabilities
+
+        if (kai is KaiSDK.DefaultKai):
+            obj[Constants.KaiID] = Constants.Default
+        elif (kai is KaiSDK.DefaultLeftKai):
+            obj[Constants.KaiID] = Constants.DefaultLeft
+        elif (kai is KaiSDK.DefaultRightKai):
+            obj[Constants.KaiID] = Constants.DefaultRight
+        else:
+            obj[Constants.KaiID] = kai.id
+
+        obj[Constants.GestureData] = KaiCapabilities.GestureData in capabilities
+        obj[Constants.LinearFlickData] = KaiCapabilities.LinearFlickData in capabilities
+        obj[Constants.FingerShortcutData] = KaiCapabilities.FingerShortcutData in capabilities
+        obj[Constants.PYRData] = KaiCapabilities.PYRData in capabilities
+        obj[Constants.QuaternionData] = KaiCapabilities.QuaternionData in capabilities
+        obj[Constants.AccelerometerData] = KaiCapabilities.AccelerometerData in capabilities
+        obj[Constants.GyroscopeData] = KaiCapabilities.GyroscopeData in capabilities
+        obj[Constants.MagnetometerData] = KaiCapabilities.MagnetometerData in capabilities
+
+        self.send(json.dumps(obj))
+
+    def unsetCapabilities(self, kai, capabilities):
+        kai.capabilities |= capabilities
+
+        if (not self.authenticated):
+            return
+
+        obj = dict()
+        obj[Constants.Type] = Constants.SetCapabilities
+
+        if (kai is KaiSDK.DefaultKai):
+            obj[Constants.KaiID] = Constants.Default
+        elif (kai is KaiSDK.DefaultLeftKai):
+            obj[Constants.KaiID] = Constants.DefaultLeft
+        elif (kai is KaiSDK.DefaultRightKai):
+            obj[Constants.KaiID] = Constants.DefaultRight
+        else:
+            obj[Constants.KaiID] = kai.id
+
+        obj[Constants.GestureData] = KaiCapabilities.GestureData not in capabilities
+        obj[Constants.LinearFlickData] = KaiCapabilities.LinearFlickData not in capabilities
+        obj[Constants.FingerShortcutData] = KaiCapabilities.FingerShortcutData not in capabilities
+        obj[Constants.PYRData] = KaiCapabilities.PYRData not in capabilities
+        obj[Constants.QuaternionData] = KaiCapabilities.QuaternionData not in capabilities
+        obj[Constants.AccelerometerData] = KaiCapabilities.AccelerometerData not in capabilities
+        obj[Constants.GyroscopeData] = KaiCapabilities.GyroscopeData not in capabilities
+        obj[Constants.MagnetometerData] = KaiCapabilities.MagnetometerData not in capabilities
+
+        self.send(json.dumps(obj))
 
     def handle(self, data):
         if (not self.initalized):
             return False
 
         obj = json.loads(data)
-
+        logging.info(obj)
         if not obj.get(Constants.Success):
             self.decodeSdkError(obj)
 
@@ -54,7 +112,7 @@ class KaiSDK:
         if resType == Constants.Authentication:
             self.decodeAuthentication(obj)
         elif resType == Constants.IncomingData:
-            self.decodeIncomingData(obj)
+            KaiSDK.decodeIncomingData(obj)
         elif resType == Constants.ListConnectedKais:
             self.decodeConnectedKais(obj)
         elif resType == Constants.KaiConnected:
@@ -63,16 +121,27 @@ class KaiSDK:
             # TODO Handle Unkown data type
             return False
 
-    def decodeSdkError(self, error):
+    @staticmethod
+    def decodeIncomingData(obj):
+        logging.info(obj)
+
+    @staticmethod
+    def decodeSdkError(error):
         return NotImplementedError
 
     def decodeAuthentication(self, auth):
         if auth.get(Constants.Success):
             logging.info("Authentication successful")
+            self.authenticated = True
+            self.getConnectedKais()
             return True
         else:
             logging.error("Authentication Failed")
             return False
+
+    def decodeConnectedKais(self, obj):
+        for token in obj[Constants.Kais]:
+            self.decodeKaiConnected(token)
 
     def decodeKaiConnected(self, obj):
         kaiID = obj.get(Constants.KaiID)
@@ -104,15 +173,14 @@ class KaiSDK:
         KaiSDK.ConnectedKais[kaiID] = Kai(id=kaiID, hand=handEnum)
 
         if (defaultKai or defaultRightKai or defaultLeftKai):
-            KaiSDK.ResetDefaultCapabilities()
+            self.ResetDefaultCapabilities()
 
-    @staticmethod
-    def ResetDefaultCapabilities():
+    def ResetDefaultCapabilities(self):
         if (KaiSDK.DefaultKai.capabilities != 0):
-            KaiSDK.DefaultKai.set_capabilities(KaiSDK.DefaultKai, KaiSDK.DefaultKai.capabilities)
+            self.setCapabilities(KaiSDK.DefaultKai, KaiSDK.DefaultKai.capabilities)
 
         if (KaiSDK.DefaultLeftKai.capabilities != 0):
-            KaiSDK.DefaultLeftKai.set_capabilities(KaiSDK.DefaultKai, KaiSDK.DefaultLeftKai.capabilities)
+            self.setCapabilities(KaiSDK.DefaultKai, KaiSDK.DefaultLeftKai.capabilities)
 
         if (KaiSDK.DefaultRightKai.capabilities != 0):
-            KaiSDK.DefaultRightKai.set_capabilities(KaiSDK.DefaultKai, KaiSDK.DefaultRightKai.capabilities)
+            self.setCapabilities(KaiSDK.DefaultKai, KaiSDK.DefaultRightKai.capabilities)

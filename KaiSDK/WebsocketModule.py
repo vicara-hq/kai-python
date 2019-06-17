@@ -6,9 +6,6 @@ import asyncio
 import logging
 
 class WebSocketModule(KaiSDK):
-    def __init__(self, moduleID, moduleSecret):
-        self.initialize(moduleID, moduleSecret)
-
     async def dataListener(self):
         while True:
             try:
@@ -18,29 +15,36 @@ class WebSocketModule(KaiSDK):
                 continue
 
     def send(self, data):
-        print("Sending data", data)
-        print(type(data))
         asyncio.ensure_future(self.webSocket.send(data))
 
     async def setupConnections(self):
         self.webSocket = await websockets.connect(Constants.WebSockerURL, ping_interval=None)
-        asyncio.ensure_future(self.dataListener())
 
-    async def connect(self):
-        if (not self.initalized):
-            return None
+    async def connect(self, moduleID, moduleSecret):
+        self.initialize(moduleID, moduleSecret)
         await self.setupConnections()
         self.sendAuth()
 
+        # Handle auth response
+        self.handle(await self.webSocket.recv())
+
+        if (self.authenticated):
+            asyncio.ensure_future(self.dataListener())
+        else:
+            return False
+
+
 async def main():
-    moduleID = ""
-    moduleSecret = ""
-    module = WebSocketModule(moduleID, moduleSecret)
-    await module.connect()
+    import os
+    from KaiSDK.DataTypes import KaiCapabilities
+    moduleID = os.environ.get("MODULE_ID")
+    moduleSecret = os.environ.get("MODULE_SECRET")
+    module = WebSocketModule()
+    await module.connect(moduleID, moduleSecret)
+    module.setCapabilities(module.DefaultKai, KaiCapabilities.GestureData)
     await asyncio.sleep(1000)
 
 if __name__ == "__main__":
-    print("Ran")
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
     loop.close()

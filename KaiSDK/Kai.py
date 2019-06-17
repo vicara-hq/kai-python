@@ -13,7 +13,6 @@ class Kai:
 
     def set_capabilities(self, capabilities):
         self.capabilities = self.capabilities | capabilities
-        return NotImplementedError
 
     def unset_capabilities(self, capabilities):
         self.capabilities = self.capabilities & ~capabilities
