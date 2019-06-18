@@ -22,7 +22,10 @@ class EventManager(object):
         Note:
         event is the event OBJECT.
         """
+
         obsolete = []
+        if (event.__class__ not in self.listeners): # No listeners registered for event
+            return
         for listener in self.listeners[event.__class__]:
             refer = listener()
             if refer is not None:

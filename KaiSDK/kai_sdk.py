@@ -104,7 +104,7 @@ class KaiSDK:
             return False
 
         obj = json.loads(data)
-        logging.info(obj)
+
         if not obj.get(Constants.Success):
             self.decodeSdkError(obj)
 
@@ -124,54 +124,53 @@ class KaiSDK:
 
     @staticmethod
     def decodeIncomingData(obj):
-        foregroundProcess = obj[Constants.ForegroundProcess]
+        foregroundProcess = obj.get(Constants.ForegroundProcess)
 
-        kaiID = obj[Constants.KaiID]
-        kai = KaiSDK.ConnectedKais[Constants.KaiID]
-        defaultKai = obj[Constants.DefaultKai]
-        defaultLeftKai = obj[Constants.DefaultLeftKai]
-        defaultRightKai = obj[Constants.DefaultRightKai]
+        kaiID = obj.get(Constants.KaiID)
+        kai = KaiSDK.ConnectedKais[kaiID]
+        defaultKai = obj.get(Constants.DefaultKai)
+        defaultLeftKai = obj.get(Constants.DefaultLeftKai)
+        defaultRightKai = obj.get(Constants.DefaultRightKai)
 
-        dataList = obj[Constants.Data]
+        dataList = obj.get(Constants.Data)
 
         for data in dataList:
             dataType = data[Constants.Type]
 
+            if dataType == Constants.GestureData:
+                event = KaiSDK.parseGestureData(data)
+            elif dataType == Constants.FingerShortcutData:
+                event = KaiSDK.parseFingerShortcutData(data)
+            elif dataType == Constants.PYRData:
+                event = KaiSDK.parsePYRData(data)
+            elif dataType == Constants.QuaternionData:
+                event = KaiSDK.parseQuaternionData(data)
+            elif dataType == Constants.LinearFlickData:
+                event = KaiSDK.parseLinearFlickData(data)
+            elif dataType == Constants.FingerPositionalData:
+                event = KaiSDK.parseFingerPositionalData(data)
+            elif dataType == Constants.AccelerometerData:
+                event = KaiSDK.parseAccelerometerData(data)
+            elif dataType == Constants.GyroscopeData:
+                event = KaiSDK.parseGyroscopeData(data)
+            elif dataType == Constants.MagnetometerData:
+                event = KaiSDK.parseMagnetometerData(data)
+            else:
+                return
 
-        if dataType == Constants.GestureData:
-            event = KaiSDK.parseGestureData(obj)
-        elif dataType == Constants.FingerShortcutData:
-            event = KaiSDK.parseFingerShortcutData(obj)
-        elif dataType == Constants.PYRData:
-            event = KaiSDK.parsePYRData(obj)
-        elif dataType == Constants.QuaternionData:
-            event = KaiSDK.parseQuaternionData(obj)
-        elif dataType == Constants.LinearFlickData:
-            event = KaiSDK.parseLinearFlickData(obj)
-        elif dataType == Constants.FingerPositionalData:
-            event = KaiSDK.parseFingerPositionalData(obj)
-        elif dataType == Constants.AccelerometerData:
-            event = KaiSDK.parseAccelerometerData(obj)
-        elif dataType == Constants.GyroscopeData:
-            event = KaiSDK.parseGyroscopeData(obj)
-        elif dataType == Constants.MagnetometerData:
-            event = KaiSDK.parseMagnetometerData(obj)
-        else:
-            return
+            kai.notify_event(event)
 
-        kai.notify_event(event)
-
-        if (defaultKai):
-            KaiSDK.DefaultKai.notify_event(event)
-        if (defaultRightKai):
-            KaiSDK.DefaultRightKai.notify_event(event)
-        if (defaultLeftKai):
-            KaiSDK.DefaultLeftKai.notify_event(event)
-        KaiSDK.AnyKai.notify_event(event)
+            if (defaultKai):
+                KaiSDK.DefaultKai.notify_event(event)
+            if (defaultRightKai):
+                KaiSDK.DefaultRightKai.notify_event(event)
+            if (defaultLeftKai):
+                KaiSDK.DefaultLeftKai.notify_event(event)
+            KaiSDK.AnyKai.notify_event(event)
 
     @staticmethod
     def parseGestureData(obj):
-        gestureType = obj[Constants.Gesture]
+        gestureType = obj.get(Constants.Gesture)
 
         try:
             gesture = Gesture[gestureType]
@@ -181,7 +180,7 @@ class KaiSDK:
 
     @staticmethod
     def parseFingerShortcutData(obj):
-        fingers = obj[Constants.Fingers]
+        fingers = obj.get(Constants.Fingers)
         return Events.FingerShortcutEvent(fingers)
 
     @staticmethod

@@ -8,11 +8,7 @@ import logging
 class WebSocketModule(KaiSDK):
     async def dataListener(self):
         while True:
-            try:
-                self.handle(await self.webSocket.recv())
-            except:
-                logging.ERROR("Could not parse received data")
-                continue
+            self.handle(await self.webSocket.recv())
 
     def send(self, data):
         asyncio.ensure_future(self.webSocket.send(data))
@@ -33,16 +29,21 @@ class WebSocketModule(KaiSDK):
         else:
             return False
 
+def gestureEvent(ev):
+    print(ev.gesture)
 
 async def main():
     import os
     from KaiSDK.DataTypes import KaiCapabilities
+    import KaiSDK.Events as Events
     moduleID = os.environ.get("MODULE_ID")
     moduleSecret = os.environ.get("MODULE_SECRET")
     module = WebSocketModule()
     await module.connect(moduleID, moduleSecret)
     module.setCapabilities(module.DefaultKai, KaiCapabilities.GestureData)
+    module.DefaultKai.register_event_listener(Events.GestureEvent, gestureEvent)
     await asyncio.sleep(1000)
+
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

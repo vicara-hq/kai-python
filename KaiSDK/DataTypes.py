@@ -14,22 +14,22 @@ class KaiCapabilities(IntFlag):
 
 
 class Gesture(Enum):
-    SwipeUp = 0
-    SwipeDown = 1
-    SwipeLeft = 2
-    SwipeRight = 3
-    SideSwipeUp = 4
-    SideSwipeDown = 5
-    SideSwipeLeft = 6
-    SideSwipeRight = 7
-    Pinch2Begin = 8
-    Pinch2End = 9
-    GrabBegin = 10
-    GrabEnd = 11
-    Pinch3Begin = 12
-    Pinch3End = 13
-    DialBegin = 14
-    DialEnd	= 15
+    swipeUp = 0
+    swipeDown = 1
+    swipeLeft = 2
+    swipeRight = 3
+    sideSwipeUp = 4
+    sideSwipeDown = 5
+    sideSwipeLeft = 6
+    sideSwipeRight = 7
+    pinch2Begin = 8
+    pinch2End = 9
+    grabBegin = 10
+    grabEnd = 11
+    pinch3Begin = 12
+    pinch3End = 13
+    dialBegin = 14
+    dialEnd	= 15
 
 class Hand(Enum):
     Left = 0
