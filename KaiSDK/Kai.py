@@ -11,6 +11,9 @@ class Kai:
     def register_event_listener(self, event, listener):
         self.eventManager.add_listener(event, listener)
 
+    def notify_event(self, event):
+        self.eventManager.update(event)
+
     def set_capabilities(self, capabilities):
         self.capabilities = self.capabilities | capabilities
 

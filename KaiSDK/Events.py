@@ -47,7 +47,7 @@ class FingerShortcutEvent:
 
 
 class PYREvent:
-    def __init__(self, yaw, pitch, roll):
+    def __init__(self, pitch, yaw, roll):
         self.yaw = yaw
         self.pitch = pitch
         self.roll = roll

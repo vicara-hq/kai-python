@@ -1,5 +1,6 @@
 from KaiSDK.constants import Constants
-from KaiSDK.DataTypes import Hand, KaiCapabilities
+from KaiSDK.DataTypes import Hand, KaiCapabilities, Gesture, Quaternion, Vector3
+import KaiSDK.Events as Events
 
 from KaiSDK.Kai import Kai
 import json
@@ -14,7 +15,7 @@ class KaiSDK:
     DefaultKai = Kai()
     DefaultLeftKai = Kai()
     DefaultRightKai = Kai()
-    AnyKai = None
+    AnyKai = Kai()
 
     def initialize(self, moduleID, moduleSecret):
         self.moduleID = moduleID
@@ -123,7 +124,115 @@ class KaiSDK:
 
     @staticmethod
     def decodeIncomingData(obj):
-        logging.info(obj)
+        foregroundProcess = obj[Constants.ForegroundProcess]
+
+        kaiID = obj[Constants.KaiID]
+        kai = KaiSDK.ConnectedKais[Constants.KaiID]
+        defaultKai = obj[Constants.DefaultKai]
+        defaultLeftKai = obj[Constants.DefaultLeftKai]
+        defaultRightKai = obj[Constants.DefaultRightKai]
+
+        dataList = obj[Constants.Data]
+
+        for data in dataList:
+            dataType = data[Constants.Type]
+
+
+        if dataType == Constants.GestureData:
+            event = KaiSDK.parseGestureData(obj)
+        elif dataType == Constants.FingerShortcutData:
+            event = KaiSDK.parseFingerShortcutData(obj)
+        elif dataType == Constants.PYRData:
+            event = KaiSDK.parsePYRData(obj)
+        elif dataType == Constants.QuaternionData:
+            event = KaiSDK.parseQuaternionData(obj)
+        elif dataType == Constants.LinearFlickData:
+            event = KaiSDK.parseLinearFlickData(obj)
+        elif dataType == Constants.FingerPositionalData:
+            event = KaiSDK.parseFingerPositionalData(obj)
+        elif dataType == Constants.AccelerometerData:
+            event = KaiSDK.parseAccelerometerData(obj)
+        elif dataType == Constants.GyroscopeData:
+            event = KaiSDK.parseGyroscopeData(obj)
+        elif dataType == Constants.MagnetometerData:
+            event = KaiSDK.parseMagnetometerData(obj)
+        else:
+            return
+
+        kai.notify_event(event)
+
+        if (defaultKai):
+            KaiSDK.DefaultKai.notify_event(event)
+        if (defaultRightKai):
+            KaiSDK.DefaultRightKai.notify_event(event)
+        if (defaultLeftKai):
+            KaiSDK.DefaultLeftKai.notify_event(event)
+        KaiSDK.AnyKai.notify_event(event)
+
+    @staticmethod
+    def parseGestureData(obj):
+        gestureType = obj[Constants.Gesture]
+
+        try:
+            gesture = Gesture[gestureType]
+            return Events.GestureEvent(gesture)
+        except KeyError:
+            return
+
+    @staticmethod
+    def parseFingerShortcutData(obj):
+        fingers = obj[Constants.Fingers]
+        return Events.FingerShortcutEvent(fingers)
+
+    @staticmethod
+    def parsePYRData(obj):
+        pitch = obj[Constants.Pitch]
+        yaw = obj[Constants.Yaw]
+        roll = obj[Constants.Roll]
+        return Events.PYREvent(pitch, yaw, roll)
+
+    @staticmethod
+    def parseQuaternionData(obj):
+        quaternionObj = obj[Constants.Quaternion]
+        w = quaternionObj[Constants.W]
+        x = quaternionObj[Constants.X]
+        y = quaternionObj[Constants.Y]
+        z = quaternionObj[Constants.Z]
+        return Events.QuaternionEvent(Quaternion(w, x, y, z))
+
+    @staticmethod
+    def parseLinearFlickData(obj):
+        flick = obj[Constants.Flick]
+        return Events.LinearFlickEvent(flick)
+
+    @staticmethod
+    def parseFingerPositionalData(obj):
+        fingers = obj[Constants.Fingers]
+        return Events.FingerPositionalEvent(fingers)
+
+    @staticmethod
+    def parseAcceleromterData(obj):
+        vectorObj = obj[Constants.Accelerometer]
+        x = vectorObj[Constants.X]
+        y = vectorObj[Constants.Y]
+        z = vectorObj[Constants.Z]
+        return Events.AccelerometerEvent(Vector3(x, y, z))
+
+    @staticmethod
+    def parseGyroscopeData(obj):
+        vectorObj = obj[Constants.Gyroscope]
+        x = vectorObj[Constants.X]
+        y = vectorObj[Constants.Y]
+        z = vectorObj[Constants.Z]
+        return Events.GyroscopeEvent(Vector3(x, y, z))
+
+    @staticmethod
+    def parseMagnetometerData(obj):
+        vectorObj = obj[Constants.Gyroscope]
+        x = vectorObj[Constants.X]
+        y = vectorObj[Constants.Y]
+        z = vectorObj[Constants.Z]
+        return Events.MagnetometerEvent(Vector3(x, y, z))
 
     @staticmethod
     def decodeSdkError(error):
