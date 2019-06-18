@@ -48,3 +48,4 @@ class Constants:
     MagnetometerData = "magnetometerData"
     Magnetometer = "magnetometer"
     KaiSerialNumber = "kaiSerialNumber"
+    GetSDKVersion = "getSDKVersion";

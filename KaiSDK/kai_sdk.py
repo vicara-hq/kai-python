@@ -41,6 +41,11 @@ class KaiSDK:
         obj[Constants.Type] = Constants.ListConnectedKais
         self.send(json.dumps(obj))
 
+    def getSDKVersion(self):
+        obj = dict()
+        obj[Constants.Type] = Constants.GetSDKVersion
+        self.send(json.dumps(obj))
+
     def setCapabilities(self, kai, capabilities):
         kai.set_capabilities(capabilities)
 
@@ -103,12 +108,19 @@ class KaiSDK:
         if (not self.initalized):
             return False
 
-        obj = json.loads(data)
+        try:
+            obj = json.loads(data)
+        except json.decoder.JSONDecodeError:
+            logging.error("Recieved invalid json: %s ")
+            return
 
         if not obj.get(Constants.Success):
             self.decodeSdkError(obj)
 
-        resType = obj[Constants.Type]
+        resType = obj.get(Constants.Type)
+
+        if (not resType):
+            return False
 
         if resType == Constants.Authentication:
             self.decodeAuthentication(obj)
@@ -210,7 +222,7 @@ class KaiSDK:
         return Events.FingerPositionalEvent(fingers)
 
     @staticmethod
-    def parseAcceleromterData(obj):
+    def parseAccelerometerData(obj):
         vectorObj = obj[Constants.Accelerometer]
         x = vectorObj[Constants.X]
         y = vectorObj[Constants.Y]

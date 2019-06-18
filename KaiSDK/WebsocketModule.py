@@ -1,51 +1,35 @@
 from KaiSDK.kai_sdk import KaiSDK
 from KaiSDK.constants import Constants
 
-import websockets
-import asyncio
-import logging
+import websocket
+import threading
+import traceback
 
 class WebSocketModule(KaiSDK):
-    async def dataListener(self):
-        while True:
-            self.handle(await self.webSocket.recv())
+    def dataListener(self):
+        while self.running:
+            try:
+                self.handle(self.webSocket.recv())
+            except:
+                print(traceback.format_exc())
+                self.close()
 
     def send(self, data):
-        asyncio.ensure_future(self.webSocket.send(data))
+        self.webSocket.send(data)
 
-    async def setupConnections(self):
-        self.webSocket = await websockets.connect(Constants.WebSockerURL, ping_interval=None)
+    def close(self):
+        if (self.running):
+            self.running = False
 
-    async def connect(self, moduleID, moduleSecret):
+            # Trigger a recv() for the listener so it closes (seems kind of hacky)
+            self.getSDKVersion()
+            self.webSocket.close()
+
+    def connect(self, moduleID, moduleSecret):
         self.initialize(moduleID, moduleSecret)
-        await self.setupConnections()
+        self.webSocket = websocket.create_connection(Constants.WebSockerURL)
         self.sendAuth()
-
-        # Handle auth response
-        self.handle(await self.webSocket.recv())
-
-        if (self.authenticated):
-            asyncio.ensure_future(self.dataListener())
-        else:
-            return False
-
-def gestureEvent(ev):
-    print(ev.gesture)
-
-async def main():
-    import os
-    from KaiSDK.DataTypes import KaiCapabilities
-    import KaiSDK.Events as Events
-    moduleID = os.environ.get("MODULE_ID")
-    moduleSecret = os.environ.get("MODULE_SECRET")
-    module = WebSocketModule()
-    await module.connect(moduleID, moduleSecret)
-    module.setCapabilities(module.DefaultKai, KaiCapabilities.GestureData)
-    module.DefaultKai.register_event_listener(Events.GestureEvent, gestureEvent)
-    await asyncio.sleep(1000)
-
-
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    loop.close()
+        self.handle(self.webSocket.recv())
+        self.running = True
+        self.socketListener = threading.Thread(target = self.dataListener)
+        self.socketListener.start()
