@@ -9,6 +9,14 @@ class Kai:
         self.eventManager = EventManager()
 
     def register_event_listener(self, event, listener):
+        """
+
+        :param event: Event Class that listener is subscribing to
+        (Refer to KaiSDK.Events for event classes)
+        :param listener: A callback function to be called when the event is
+        received from the kai
+        :return:
+        """
         self.eventManager.add_listener(event, listener)
 
     def notify_event(self, event):
@@ -19,4 +27,3 @@ class Kai:
 
     def unset_capabilities(self, capabilities):
         self.capabilities = self.capabilities & ~capabilities
-        return NotImplementedError

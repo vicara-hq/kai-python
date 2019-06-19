@@ -2,6 +2,13 @@ from enum import IntFlag, Enum
 
 
 class KaiCapabilities(IntFlag):
+    """
+    Capabilities that can be set/unset for the Kai.
+    These are Int Flags which can be combined to set multiple
+    flags at once, for example:
+    KaiCapabilities.GestureData | KaiCapabilities.PYRData
+    would set the bits for both gestures and PYR data
+    """
     GestureData = 1
     LinearFlickData = 2
     FingerShortcutData = 4
@@ -14,6 +21,9 @@ class KaiCapabilities(IntFlag):
 
 
 class Gesture(Enum):
+    """
+    Types of Gestures that a GestureEvent can contain
+    """
     swipeUp = 0
     swipeDown = 1
     swipeLeft = 2
@@ -36,12 +46,20 @@ class Hand(Enum):
     Right = 1
 
 class Vector3:
+    """
+    Container to represent accelerometer/gyroscope/magnetometer data
+    The attributes x,y,z represent the respective sensor readings
+    """
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
 
 class Quaternion:
+    """
+    Container to represent Quaternion data.
+    The attributes w,x,y,z represent the respective quaternion values.
+    """
     def __init__(self, w, x, y, z):
         self.w = w
         self.x = x

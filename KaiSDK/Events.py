@@ -1,4 +1,15 @@
+"""
+Contains classes for different types of events that can be subscribed to from the Kai
+"""
+
 class GestureEvent:
+    """
+    Represents a Gesture performed on the kai (for eg: swipeLeft, sideSwipeRight, etc.)
+
+    Attributes:
+
+    gesture Enum representing the gesture (Refer to KaiSDK.DataTypes.Gesture)
+    """
     def __init__(self, gesture):
         self.gesture = gesture
 
@@ -9,6 +20,21 @@ class LinearFlickEvent:
 
 
 class FingerPositionalEvent:
+    """
+    Informs about the state of each finger (open/closed)
+
+    Attributes:
+
+    Fingers (list): List of bools with state of each finger
+
+    littleFinger (bool)
+
+    ringFinger (bool)
+
+    middleFinger (bool)
+
+    indexFinger (bool)
+    """
     def __init__(self, fingers):
         self.fingers = fingers
         self.littleFinger = fingers[0]
@@ -18,16 +44,37 @@ class FingerPositionalEvent:
 
 
 class AccelerometerEvent:
+    """
+    Accelerometer reading from Kai
+
+    Attributes:
+
+    accelerometer Vector3 (Refer to KaiSDK.DataTypes.Vector3)
+    """
     def __init__(self, accelerometer):
         self.accelerometer = accelerometer
 
 
 class GyroscopeEvent:
+    """
+    Gyroscope reading from Kai
+
+    Attributes:
+
+    gyroscope Vector3 (Refer to KaiSDK.DataTypes.Vector3)
+    """
     def __init__(self, gyroscope):
         self.gyroscope = gyroscope
 
 
 class MagnetometerEvent:
+    """
+    Magnetometer reading from Kai
+
+    Attributes:
+
+    accelerometer Vector3 (Refer to KaiSDK.DataTypes.Vector3)
+    """
     def __init__(self, magnetometer):
         self.magnetometer = magnetometer
 
@@ -47,6 +94,17 @@ class FingerShortcutEvent:
 
 
 class PYREvent:
+    """
+    PYR reading from Kai
+
+    Attributes:
+
+    pitch (float)
+
+    yaw (float)
+
+    roll (float)
+    """
     def __init__(self, pitch, yaw, roll):
         self.yaw = yaw
         self.pitch = pitch
@@ -54,6 +112,13 @@ class PYREvent:
 
 
 class QuaternionEvent:
+    """
+    Quaternion reading from Kai
+
+    Attributes:
+
+    quaternion Vector3 (Refer to KaiSDK.DataTypes.Quaternion)
+    """
     def __init__(self, quaternion):
         self.quaternion = quaternion
 

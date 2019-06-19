@@ -28,6 +28,9 @@ class KaiSDK:
             return None
         return KaiSDK.connectedKais[kaiID]
 
+    def send(self, json):
+        return NotImplementedError
+
     def sendAuth(self):
         obj = dict()
         obj[Constants.Type] = Constants.Authentication
@@ -111,7 +114,7 @@ class KaiSDK:
         try:
             obj = json.loads(data)
         except json.decoder.JSONDecodeError:
-            logging.error("Recieved invalid json: %s ")
+            logging.error("Received invalid json: %s ")
             return
 
         if not obj.get(Constants.Success):
