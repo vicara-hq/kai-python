@@ -1,21 +1,15 @@
-import setuptools
+from setuptools import setup
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-setuptools.setup(
-    name="kaisdk",
-    version="0.0.15",
-    author="Vicara",
-    author_email="dev@vicara.co",
-    description="A python package to assist in interfacig with the KAI SDK",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/vicara-hq/kai-python",
-    packages=setuptools.find_packages(),
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
+setup(
+    name='kai-python',
+    version='0.1',
+    packages=['KaiSDK'],
+    install_requires=[
+        'websocket_client',
     ],
+    url='https://github.com/vicara-hq/kai-python',
+    license='MIT',
+    author='Vicara',
+    author_email='dev@vicara.co',
+    description='Python Client Library for the KaiSDK'
 )
