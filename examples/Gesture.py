@@ -26,7 +26,11 @@ moduleSecret = config.get("MODULE", "SECRET")
 
 # Create a WS module and connect to the SDK
 module = WebSocketModule()
-module.connect(moduleID, moduleSecret)
+success = module.connect(moduleID, moduleSecret)
+
+if not success:
+    print("Unable to authenticate with Kai SDK")
+    exit(1)
 
 # Set the default Kai to record gestures and accelerometer readings
 module.setCapabilities(module.DefaultKai, KaiCapabilities.GestureData | KaiCapabilities.AccelerometerData)
