@@ -2,10 +2,10 @@ from KaiSDK.EventManager import EventManager
 
 
 class Kai:
-    def __init__(self, id = 0, capabilities = 0, hand = 0):
-        self.id = 0
-        self.capabilities = 0
-        self.hand = 0
+    def __init__(self, id = None, capabilities = 0, hand = None):
+        self.id = id
+        self.capabilities = capabilities
+        self.hand = hand
         self.eventManager = EventManager()
 
     def register_event_listener(self, event, listener):

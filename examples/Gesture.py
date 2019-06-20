@@ -4,6 +4,7 @@ Example program for receiving gesture events and accelerometer readings from Kai
 
 import os
 import time
+import configparser
 
 from KaiSDK.WebSocketModule import WebSocketModule
 from KaiSDK.DataTypes import KaiCapabilities
@@ -16,8 +17,12 @@ def gestureEvent(ev):
 def accelerometerEv(ev):
     print(ev.accelerometer.x)
 
-moduleID = os.environ.get("MODULE_ID")
-moduleSecret = os.environ.get("MODULE_SECRET")
+# Use your module's ID and secret here
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+moduleID = config.get("MODULE", "ID")
+moduleSecret = config.get("MODULE", "SECRET")
 
 # Create a WS module and connect to the SDK
 module = WebSocketModule()
