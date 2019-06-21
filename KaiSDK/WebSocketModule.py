@@ -25,16 +25,12 @@ class WebSocketModule(KaiSDK):
     for data from all connected Kais
     """
     def __init__(self):
-        self.initialized = False
-        self.authenticated = False
+        self.running = False
+        self.webSocket = None
+        KaiSDK.__init__(self)
 
-    def dataListener(self):
-        while self.running:
-            try:
-                self.handle(self.webSocket.recv())
-            except:
-                print(traceback.format_exc())
-                self.close()
+    def receive_data(self):
+        return self.webSocket.recv()
 
     def send(self, data):
         self.webSocket.send(data)
@@ -51,23 +47,10 @@ class WebSocketModule(KaiSDK):
             self.getSDKVersion()
             self.webSocket.close()
 
-    def connect(self, moduleID, moduleSecret):
-        """
-        Connects to the SDK and authenticates using the given moduleID and moduleSecret
-        :param moduleID: module ID of your Kai module
-        :type moduleID: str
-        :param moduleSecret:  module secret of your kai module
-        :type moduleSecret str
-        :return: True if successfully connected and authenticated, otherwise False
-        :rtype: bool
-        """
-        self.initialize(moduleID, moduleSecret)
+    def create_connection(self):
         self.webSocket = websocket.create_connection(Constants.WebSockerURL)
-        self.sendAuth()
-        self.handle(self.webSocket.recv())
-        if (self.authenticated):
-            self.running = True
-            self.socketListener = threading.Thread(target = self.dataListener)
-            self.socketListener.start()
-            return True
-        return False
+
+    def close_connection(self):
+        self.webSocket.close()
+
+

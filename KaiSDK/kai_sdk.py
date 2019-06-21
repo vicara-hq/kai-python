@@ -4,9 +4,9 @@ import KaiSDK.Events as Events
 
 from KaiSDK.Kai import Kai
 import json
-import logging
+import traceback
+import threading
 
-logging.basicConfig(level=logging.INFO)
 
 class KaiSDK:
     ConnectedKais = [Kai() for i in range(8)]
@@ -17,19 +17,70 @@ class KaiSDK:
     DefaultRightKai = Kai()
     AnyKai = Kai()
 
+    def __init__(self):
+        self.initialized = False
+        self.authenticated = False
+        self.running = False
+
     def initialize(self, moduleID, moduleSecret):
         self.moduleID = moduleID
         self.moduleSecret = moduleSecret
         self.initalized = True
 
+    def connect(self, moduleID, moduleSecret):
+        """
+        Connects to the SDK and authenticates using the given moduleID and moduleSecret
+        :param moduleID: module ID of your Kai module
+        :type moduleID: str
+        :param moduleSecret:  module secret of your kai module
+        :type moduleSecret str
+        :return: True if successfully connected and authenticated, otherwise False
+        :rtype: bool
+        """
+        self.initialize(moduleID, moduleSecret)
+        self.create_connection()
+        self.sendAuth()
+        self.handle(self.receive_data())
+        if self.authenticated:
+            self.running = True
+            self.dataListener = threading.Thread(target=self.listener_thread)
+            self.dataListener.start()
+            return True
+        return False
+
+    def create_connection(self):
+        return NotImplementedError
+
+    def close_connection(self):
+        return NotImplementedError
+
+    def close(self):
+        if self.running:
+            self.running = False
+
+            # Trigger a receive_data() for the dataListener so it closes (seems kind of hacky)
+            self.getSDKVersion()
+            self.close_connection()
+
     @staticmethod
     def getKaiByID(kaiID):
         if (kaiID >= 8):
             return None
-        return KaiSDK.connectedKais[kaiID]
+        return KaiSDK.ConnectedKais[kaiID]
 
     def send(self, json):
         return NotImplementedError
+
+    def receive_data(self):
+        return NotImplementedError
+
+    def listener_thread(self):
+        while self.running:
+            try:
+                self.handle(self.receive_data())
+            except:
+                print(traceback.format_exc())
+                self.close()
 
     def sendAuth(self):
         obj = dict()
@@ -79,7 +130,7 @@ class KaiSDK:
         self.send(json.dumps(obj))
 
     def unsetCapabilities(self, kai, capabilities):
-        kai.capabilities |= capabilities
+        kai.unset_capabilities(capabilities)
 
         if (not self.authenticated):
             return
@@ -114,7 +165,6 @@ class KaiSDK:
         try:
             obj = json.loads(data)
         except json.decoder.JSONDecodeError:
-            logging.error("Received invalid json: %s ")
             return
 
         if not obj.get(Constants.Success):
@@ -254,12 +304,10 @@ class KaiSDK:
 
     def decodeAuthentication(self, auth):
         if auth.get(Constants.Success):
-            logging.info("Authentication successful")
             self.authenticated = True
             self.getConnectedKais()
             return True
         else:
-            logging.error("Authentication Failed")
             return False
 
     def decodeConnectedKais(self, obj):
