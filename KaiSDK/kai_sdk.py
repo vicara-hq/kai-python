@@ -193,9 +193,9 @@ class KaiSDK:
 
         kaiID = obj.get(Constants.KaiID)
         kai = KaiSDK.ConnectedKais[kaiID]
-        defaultKai = obj.get(Constants.DefaultKai)
-        defaultLeftKai = obj.get(Constants.DefaultLeftKai)
-        defaultRightKai = obj.get(Constants.DefaultRightKai)
+        defaultKai = obj.get(Constants.DefaultKai) or obj.get(Constants.Default)
+        defaultLeftKai = obj.get(Constants.DefaultLeftKai) or obj.get(Constants.DefaultLeft)
+        defaultRightKai = obj.get(Constants.DefaultRightKai) or obj.get(Constants.DefaultRight)
 
         dataList = obj.get(Constants.Data)
 
@@ -318,9 +318,9 @@ class KaiSDK:
         kaiID = obj.get(Constants.KaiID)
         hand = obj.get(Constants.Hand)
 
-        defaultKai = Constants.DefaultKai
-        defaultLeftKai = Constants.DefaultLeftKai
-        defaultRightKai = Constants.DefaultRightKai
+        defaultKai = obj.get(Constants.DefaultKai) or obj.get(Constants.Default)
+        defaultLeftKai = obj.get(Constants.DefaultLeftKai) or obj.get(Constants.DefaultLeft)
+        defaultRightKai = obj.get(Constants.DefaultRightKai) or obj.get(Constants.DefaultRight)
 
         kaiSerialNumber = Constants.KaiSerialNumber
 
