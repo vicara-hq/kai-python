@@ -292,7 +292,7 @@ class KaiSDK:
 
     @staticmethod
     def parseMagnetometerData(obj):
-        vectorObj = obj[Constants.Gyroscope]
+        vectorObj = obj[Constants.Magnetometer]
         x = vectorObj[Constants.X]
         y = vectorObj[Constants.Y]
         z = vectorObj[Constants.Z]
