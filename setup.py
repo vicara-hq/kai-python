@@ -11,5 +11,6 @@ setup(
     license='MIT',
     author='Vicara',
     author_email='dev@vicara.co',
-    description='Python Client Library for the KaiSDK'
+    description='Python Client Library for the KaiSDK',
+    keywords=["vicara", "kai", "sdk"]
 )
