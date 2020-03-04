@@ -18,6 +18,16 @@ moduleID = "moduleName"     # Name can be anything
 moduleSecret = "qwerty"     # Leave as is
 ```
 
+You can also create a config.ini file along with the information required in the following format:
+
+```ini
+[MODULE]
+ID = "moduleName"
+SECRET = "qwerty"
+```
+
+You can find an example for this in the examples folder.
+
 b. Make sure the KaiSDK service is running.   
   
 c. Connect to the KaiSDK Websocket.
@@ -48,7 +58,7 @@ module.setCapabilities(module.DefaultKai, KaiCapabilities.AccelerometerData | Ka
 def accelerometerEv(ev):
     print(ev.accelerometer.x)
     print(ev.accelerometer.y)
-    print(ev.accelerometer.z_
+    print(ev.accelerometer.z)
 
 module.DefaultKai.register_event_listener(Events.AccelerometerEvent, accelerometerEv)
 ```
