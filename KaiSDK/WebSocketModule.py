@@ -46,9 +46,11 @@ class WebSocketModule(KaiSDK):
             # Trigger a recv() for the listener so it closes (seems kind of hacky)
             self.getSDKVersion()
             self.webSocket.close()
+            print('Websocket intentionally closed.')
 
     def create_connection(self):
         self.webSocket = websocket.create_connection(Constants.WebSockerURL)
+        print(f'Websocket has been successfully hosted at {Constants.WebSockerURL}')
 
     def close_connection(self):
         self.webSocket.close()
