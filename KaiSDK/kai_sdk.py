@@ -6,16 +6,18 @@ from KaiSDK.Kai import Kai
 import json
 import traceback
 import threading
+nomenclature = ['alpha', 'beta', 'gamma','delta','epsilon','zeta', 'eta','theta']
 
 
 class KaiSDK:
-    ConnectedKais = [Kai() for i in range(8)]
+    ConnectedKais = [Kai(name=x) for x in nomenclature]
     ForegroundProcess = ""
 
-    DefaultKai = Kai()
-    DefaultLeftKai = Kai()
-    DefaultRightKai = Kai()
-    AnyKai = Kai()
+    myKai = ConnectedKais[0]
+    DefaultKai = myKai
+    DefaultLeftKai = myKai
+    DefaultRightKai = myKai
+    AnyKai = myKai
 
     def __init__(self):
         self.initialized = False
@@ -38,13 +40,15 @@ class KaiSDK:
         :rtype: bool
         """
         self.initialize(moduleID, moduleSecret)
-        self.create_connection()
+        self.create_connection() #redundant
         self.sendAuth()
         self.handle(self.receive_data())
         if self.authenticated:
+            print("KaiSDK successfully connected")
             self.running = True
             self.dataListener = threading.Thread(target=self.listener_thread)
             self.dataListener.start()
+            print("started event listening")
             return True
         return False
 
@@ -83,9 +87,13 @@ class KaiSDK:
                 self.close()
 
     def sendAuth(self):
+        print("Authentication in progress")
         obj = dict()
         obj[Constants.Type] = Constants.Authentication
+        print(Constants.Authentication)
         obj[Constants.ModuleId] = self.moduleID
+        print(self.moduleID)
+        print("Authentication successful")
         obj[Constants.ModuleSecret] = self.moduleSecret
 
         self.send(json.dumps(obj))
@@ -94,11 +102,13 @@ class KaiSDK:
         obj = dict()
         obj[Constants.Type] = Constants.ListConnectedKais
         self.send(json.dumps(obj))
+        return Constants.ListConnectedKais
 
     def getSDKVersion(self):
         obj = dict()
         obj[Constants.Type] = Constants.GetSDKVersion
         self.send(json.dumps(obj))
+        return Constants.GetSDKVersion
 
     def setCapabilities(self, kai, capabilities):
         kai.set_capabilities(capabilities)

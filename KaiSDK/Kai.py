@@ -2,8 +2,9 @@ from KaiSDK.EventManager import EventManager
 
 
 class Kai:
-    def __init__(self, id = None, capabilities = 0, hand = None):
+    def __init__(self, id = None, name = None, capabilities = 0, hand = None):
         self.id = id
+        self.name = name
         self.capabilities = capabilities
         self.hand = hand
         self.eventManager = EventManager()
